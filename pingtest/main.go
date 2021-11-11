@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"webtest"
+	"pingtest/webtest"
 )
 
 func main() {
