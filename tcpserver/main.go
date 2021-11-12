@@ -21,8 +21,11 @@ func Handler(conn net.Conn) {
 	fmt.Println(addr + ": 客户端传输的文件名为--" + fileName)
 	//告诉客户端已经接收到文件名
 	conn.Write([]byte("ok"))
+	var location string
+	fmt.Println("请输入保存地址（可使用相对地址， . 为本地，且末尾不需要加 /）")
+	fmt.Scan(&location)
 	//创建文件
-	f, err := os.Create(fileName)
+	f, err := os.Create(location + "/" + fileName)
 	if err != nil {
 		fmt.Println(err)
 		return
