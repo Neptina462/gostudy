@@ -12,26 +12,19 @@ ENV DOCKER_GOPATH /go
 # 宿主机的GOPATH
 ENV LOCAL_GOPATH ./gopath
 
-# 导入pingtest文件
-COPY ./pingtest /webserve/pingtest
-
-# 导入tcp传输文件，client为发送端，server为服务监听接收端
-COPY ./tcpclient /tcpfilesender/tcpclient
-COPY ./tcpserver /tcpfilesender/tcpserver
-
-# 导入pkg文件到GOPATH目录
-COPY ./gopath /go
-
-# 导入GOROOT/src下的库
-# GR为宿主机goroot中需要导入的新的库，需要手动更新
-COPY ./GR /usr/local/go/src
+# 导入tcpserver服务监听接收端
+COPY . /tcpserver
 
 # net-tools为安装网络工具
 # inetutils-ping为ping工具
+# download为挂载的接收区域
 RUN apt-get update\
     && apt-get install net-tools\       
     && apt-get install inetutils-ping\
     && mkdir /download
 
 #启动服务，默认8080端口
-ENTRYPOINT ["go","run", "/tcpfilesender/tcpserver/main.go"]
+ENTRYPOINT ["go","run", "/tcpserver/main.go"]
+
+# 启动docker时可以加入动态参数修改监听端口
+# eg: docker run [container's name] -p :7070

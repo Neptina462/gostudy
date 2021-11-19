@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
 	"os"
@@ -8,6 +9,7 @@ import (
 )
 
 func Handler(conn net.Conn) {
+	defer conn.Close()
 	buf := make([]byte, 2048)
 	//读取客户端发送的内容
 	n, err := conn.Read(buf)
@@ -21,15 +23,16 @@ func Handler(conn net.Conn) {
 	fmt.Println(addr + ": 客户端传输的文件名为--" + fileName)
 	//告诉客户端已经接收到文件名
 	conn.Write([]byte("ok"))
-	var location string
+	/* var location string
 	fmt.Println("请输入保存地址（可使用相对地址， . 为本地，且末尾不需要加 /）")
-	fmt.Scan(&location)
+	fmt.Scan(&location) */
 	//创建文件
-	f, err := os.Create(location + "/" + fileName)
+	f, err := os.Create("/download/" + fileName)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	defer f.Close()
 	//循环接收客户端传递的文件内容
 	for {
 		buf := make([]byte, 2048)
@@ -41,16 +44,21 @@ func Handler(conn net.Conn) {
 		}
 		f.Write(buf[:n])
 	}
-	defer conn.Close()
-	defer f.Close()
+
 }
 
 func main() {
-	fmt.Println("输入需要监听的端口")
+	/* fmt.Println("输入需要监听的端口")
 	var port_name string
-	fmt.Scan(&port_name)
+	fmt.Scan(&port_name) */
 	//创建tcp监听
-	listen, err := net.Listen("tcp", ":"+port_name)
+
+	var port string
+
+	flag.StringVar(&port, "p", ":8080", "port to be listened")
+	flag.Parse()
+
+	listen, err := net.Listen("tcp", port)
 	if err != nil {
 		fmt.Println(err)
 		return
