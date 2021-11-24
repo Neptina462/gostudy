@@ -23,11 +23,30 @@ func Handler(conn net.Conn) {
 	fmt.Println(addr + ": 客户端传输的文件名为--" + fileName)
 	//告诉客户端已经接收到文件名
 	conn.Write([]byte("ok"))
-	/* var location string
-	fmt.Println("请输入保存地址（可使用相对地址， . 为本地，且末尾不需要加 /）")
-	fmt.Scan(&location) */
+
+	//保存的文件夹
+	dirname := "/download/"
+	//判断文件夹是否存在
+	_, err0 := os.Stat(dirname)
+	if err0 != nil {
+		//若错误为不存在
+		if os.IsNotExist(err0) {
+			fmt.Println("文件夹不存在，即将创建")
+			err1 := os.Mkdir(dirname, os.ModePerm)
+			if err1 != nil {
+				fmt.Println("文件夹创建失败！即将退出")
+				fmt.Println(err1)
+				return
+			}
+			fmt.Println("创建成功！")
+		} else {
+			fmt.Println(err0)
+			return
+		}
+	}
+
 	//创建文件
-	f, err := os.Create("/download/" + fileName)
+	f, err := os.Create(dirname + fileName)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -38,7 +57,7 @@ func Handler(conn net.Conn) {
 		buf := make([]byte, 2048)
 		n, _ := conn.Read(buf)
 		//结束协程
-		if string(buf[:n]) == "finish" {
+		if string(buf[:n]) == "finish" || n == 0 {
 			fmt.Println(addr + ": 协程结束")
 			runtime.Goexit()
 		}

@@ -7,13 +7,8 @@
 # GOPATH="/go"（pkg在此目录之下）
 FROM golang
 
-# DOCKER的GOPATH
-ENV DOCKER_GOPATH /go  
-# 宿主机的GOPATH
-ENV LOCAL_GOPATH ./gopath
-
 # 导入tcpserver服务监听接收端
-COPY . /tcpserver
+COPY . /serve
 
 # net-tools为安装网络工具
 # inetutils-ping为ping工具
@@ -23,8 +18,8 @@ RUN apt-get update\
     && apt-get install inetutils-ping\
     && mkdir /download
 
-#启动服务，默认8080端口
-ENTRYPOINT ["go","run", "/tcpserver/main.go"]
+#启动服务，默认docker内8080端口
+ENTRYPOINT ["go","run", "/serve/main.go"]
 
-# 启动docker时可以加入动态参数修改监听端口
-# eg: docker run [container's name] -p :7070
+# 启动docker时可以加入动态参数修改监听端口（注意同时修改绑定端口）
+# eg: docker run [image's name] -p :7070

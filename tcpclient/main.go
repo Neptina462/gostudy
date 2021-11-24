@@ -39,14 +39,6 @@ func SendFile(filePath string, fileSize int64, conn net.Conn) {
 }
 
 func main() {
-	/* fmt.Print("请输入文件的完整路径：")
-	//创建切片，用于存储输入的路径
-	var file_url string
-	fmt.Scan(&file_url)
-
-	fmt.Print("请输入服务器地址：")
-	var server_url string
-	fmt.Scan(&server_url) */
 
 	var server_ip string //服务器地址，ip+端口号
 	var file_url string  //文件路径
@@ -56,7 +48,7 @@ func main() {
 	flag.Parse()
 
 	//获取文件信息
-	fileInfo, err := os.Stat("./" + file_url)
+	fileInfo, err := os.Stat(file_url)
 	if err != nil {
 		fmt.Println(err)
 		return
